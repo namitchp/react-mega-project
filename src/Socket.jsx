@@ -9,34 +9,25 @@ import {
   Typography,
 } from '@mui/material';
 const Socket = () => {
-  const socket = useMemo(
-    () =>
-      io('http://localhost:8000', {
-        withCredentials: true,
-      }),
-    []
-  );
-
+  const socket = useMemo(() => io('http://localhost:8000'), []);
+  // console.log(socket.on);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [room, setRoom] = useState('');
   const [socketID, setSocketId] = useState('');
   const [roomName, setRoomName] = useState('');
-
   const handleSubmit = (e) => {
     e.preventDefault();
     socket.emit('message', { message, room });
     setMessage('');
   };
-
   const joinRoomHandler = (e) => {
     e.preventDefault();
-    socket.emit('join-room', roomName);
+    socket.emit('message', roomName);
     setRoomName('');
   };
-
   useEffect(() => {
-    socket.on('connect', () => {
+    socket.on('connection', () => {
       setSocketId(socket.id);
       console.log('connected', socket.id);
     });
@@ -59,7 +50,7 @@ const Socket = () => {
     <Container maxWidth="sm">
       <Box sx={{ height: 500 }} />
       <Typography variant="h6" component="div" gutterBottom>
-        {socketID}
+        {socketID}6765
       </Typography>
 
       <form onSubmit={joinRoomHandler}>
