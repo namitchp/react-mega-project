@@ -9,25 +9,34 @@ import {
   Typography,
 } from '@mui/material';
 const Socket = () => {
-  const socket = useMemo(() => io('http://localhost:8000'), []);
-  // console.log(socket.on);
+  const socket = useMemo(
+    () =>
+      io('http://localhost:8000', {
+        // withCredentials: true,
+      }),
+    []
+  );
+
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [room, setRoom] = useState('');
   const [socketID, setSocketId] = useState('');
   const [roomName, setRoomName] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
     socket.emit('message', { message, room });
     setMessage('');
   };
+
   const joinRoomHandler = (e) => {
     e.preventDefault();
-    socket.emit('message', roomName);
+    socket.emit('join-room', roomName);
     setRoomName('');
   };
+
   useEffect(() => {
-    socket.on('connection', () => {
+    socket.on('connect', () => {
       setSocketId(socket.id);
       console.log('connected', socket.id);
     });
@@ -41,6 +50,15 @@ const Socket = () => {
       console.log(s);
     });
 
+    socket.on('connect_error', (error) => {
+      if (socket.active) {
+        // temporary failure, the socket will automatically try to reconnect
+      } else {
+        // the connection was denied by the server
+        // in that case, `socket.connect()` must be manually called in order to reconnect
+        console.log(error);
+      }
+    });
     return () => {
       socket.disconnect();
     };
@@ -50,7 +68,7 @@ const Socket = () => {
     <Container maxWidth="sm">
       <Box sx={{ height: 500 }} />
       <Typography variant="h6" component="div" gutterBottom>
-        {socketID}6765
+        {socketID}
       </Typography>
 
       <form onSubmit={joinRoomHandler}>
