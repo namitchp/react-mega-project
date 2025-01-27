@@ -54,7 +54,9 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/video_list');
+        const response = await axios.get(
+          'http://148.72.168.56:8001/video_list'
+        );
         if (response.data.valid) setlistData(response.data.list);
       } catch (error) {
         console.error('Error fetching data:', error);
